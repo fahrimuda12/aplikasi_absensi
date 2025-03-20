@@ -12,6 +12,9 @@ import com.absensi.absensi.exception.ResourceNotFoundException;
 import com.absensi.absensi.model.UserModel;
 import com.absensi.absensi.repository.UserRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class AuthService {
    @Autowired
@@ -25,8 +28,9 @@ public class AuthService {
 
    public LoginDTO login(String nik, String password) {
       UserModel user = userRepository.findByNik(nik).orElseThrow(() -> new ResourceNotFoundException());
-      if (user.getPassword().equals(password)) {
-         return new LoginDTO(user);
+      String encryptPassword = new BCryptPasswordEncoder().encode(password);
+      if (user.getPassword().equals(encryptPassword)) {
+         ;
       } else {
          throw new RuntimeException("Password is incorrect");
       }
@@ -42,6 +46,7 @@ public class AuthService {
       user.setName(input.getName());
       user.setNik(input.getNik());
       user.setPassword(encryptedPassword);
+      user.setPasswordSalt("salt");
       user.setEmail(input.getEmail());
       user.setAddress(input.getAddress());
       user.setCreatedAt(LocalDateTime.now());

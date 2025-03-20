@@ -3,8 +3,11 @@ package com.absensi.absensi.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-// @AllArgsConstructor
+@Data
+@AllArgsConstructor
 public class RegisterDTO {
 
    @Size(min = 4, max = 6, message = "nik must be between 4 and 6 characters")
@@ -25,12 +28,15 @@ public class RegisterDTO {
    @NotNull(message = "address must not be null")
    private String address;
 
-   public String getNik() {
-      return nik;
+   public RegisterDTO() {
    }
 
    public void setNik(String nik) {
       this.nik = nik;
+   }
+
+   public String getNik() {
+      return nik;
    }
 
    public void setName(String name) {
