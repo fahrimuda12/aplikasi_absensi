@@ -11,16 +11,17 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class AuthConfig {
-   // @Autowired
+      // @Autowired
 
-   @Bean
-   SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-      return httpSecurity
-            .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(authorize -> authorize
-                  .requestMatchers(HttpMethod.POST, "/auth/*").permitAll()
-                  .anyRequest().authenticated())
-            .build();
-   }
+      @Bean
+      SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+            return httpSecurity
+                        .csrf(csrf -> csrf.disable())
+                        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .authorizeHttpRequests(authorize -> authorize
+                                    .requestMatchers(HttpMethod.POST, "/auth/*").permitAll()
+                                    .requestMatchers(HttpMethod.GET, "/").permitAll()
+                                    .anyRequest().authenticated())
+                        .build();
+      }
 }

@@ -1,16 +1,16 @@
 package com.absensi.absensi.service;
 
-import java.time.LocalDateTime;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.absensi.absensi.dto.LoginDTO;
+import com.absensi.absensi.client.AuthClient;
 import com.absensi.absensi.dto.RegisterDTO;
 import com.absensi.absensi.exception.ResourceNotFoundException;
 import com.absensi.absensi.model.UserModel;
 import com.absensi.absensi.repository.UserRepository;
+import com.absensi.absensi.response.RegisterResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthService {
    @Autowired
    private final UserRepository userRepository;
+   @Autowired
+   private AuthClient authClient;
    // private final PasswordEncoder passwordEncoder;
 
    public AuthService(UserRepository userRepository) {
@@ -26,30 +28,24 @@ public class AuthService {
       // this.passwordEncoder = passwordEncoder;
    }
 
-   public LoginDTO login(String nik, String password) {
+   public UserModel login(String nik, String password) {
       UserModel user = userRepository.findByNik(nik).orElseThrow(() -> new ResourceNotFoundException());
       String encryptPassword = new BCryptPasswordEncoder().encode(password);
       if (user.getPassword().equals(encryptPassword)) {
-         ;
+         return user;
       } else {
          throw new RuntimeException("Password is incorrect");
       }
    }
 
-   public UserModel register(RegisterDTO input) {
-      UserModel user = new UserModel();
+   public RegisterResponse register(RegisterDTO input) {
+      ResponseEntity<RegisterResponse> registerResponse = authClient.registerResource(input);
 
-      // String hex = Integer.toHexString((int) (Math.random() * 1000000));
-      // String salt = Base64.getEncoder().encodeToString(input.getPassword() +
-      // hex.getBytes());
-      String encryptedPassword = new BCryptPasswordEncoder().encode(input.getPassword());
-      user.setName(input.getName());
-      user.setNik(input.getNik());
-      user.setPassword(encryptedPassword);
-      user.setPasswordSalt("salt");
-      user.setEmail(input.getEmail());
-      user.setAddress(input.getAddress());
-      user.setCreatedAt(LocalDateTime.now());
-      return userRepository.save(user);
+      if (registerResponse.getBody() != null) {
+         RegisterResponse responseBody = registerResponse.getBody();
+         return responseBody;
+      } else {
+         throw new RuntimeException("Failed to register user: Response body is null");
+      }
    }
 }
