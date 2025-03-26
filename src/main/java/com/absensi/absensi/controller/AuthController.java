@@ -1,6 +1,5 @@
 package com.absensi.absensi.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,8 +16,11 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-   @Autowired
-   AuthService authService;
+   private final AuthService authService;
+
+   public AuthController(AuthService authService) {
+      this.authService = authService;
+   }
 
    @PostMapping("/login")
    ResponseEntity<?> Login(@RequestBody LoginDTO loginDTO) {
